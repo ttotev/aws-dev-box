@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name "Dev-Box" --template-body file://dev_box_cf_template.yaml --tags "Key=Team,Value=DRE" --capabilities CAPABILITY_IAM
