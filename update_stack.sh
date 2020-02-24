@@ -8,6 +8,7 @@ then
       echo "\$AWS_DEVBOX_VPCID is empty"
       exit 1
 fi
-aws cloudformation create-stack --stack-name "Dev-Box" --template-body file://dev_box_cf_template.yaml \
+aws cloudformation update-stack --stack-name "Dev-Box" \
+    --use-previous-template \
     --parameters ParameterKey=SubnetId,ParameterValue=$AWS_DEVBOX_SUBNETID ParameterKey=VpcId,ParameterValue=$AWS_DEVBOX_VPCID \
-    --tags "Key=Team,Value=DRE" --capabilities CAPABILITY_IAM
+    --capabilities CAPABILITY_IAM
