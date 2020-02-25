@@ -8,6 +8,13 @@ then
       echo "\$AWS_DEVBOX_VPCID is empty"
       exit 1
 fi
+if [ -z "$AWS_DEVBOX_KEYPAIRNAME" ]
+then
+      echo "\$AWS_DEVBOX_KEYPAIRNAME is empty"
+      exit 1
+fi
 aws cloudformation create-stack --stack-name "Dev-Box" --template-body file://dev_box_cf_template.yaml \
-    --parameters ParameterKey=SubnetId,ParameterValue=$AWS_DEVBOX_SUBNETID ParameterKey=VpcId,ParameterValue=$AWS_DEVBOX_VPCID \
+    --parameters ParameterKey=SubnetId,ParameterValue=$AWS_DEVBOX_SUBNETID \
+      ParameterKey=VpcId,ParameterValue=$AWS_DEVBOX_VPCID \
+      ParameterKey=KeyPairName,ParameterValue=$AWS_DEVBOX_KEYPAIRNAME \
     --tags "Key=Team,Value=DRE" --capabilities CAPABILITY_IAM

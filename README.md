@@ -7,7 +7,11 @@ Enable Bastion host - follow instructions at [quickstart-linux-bastion](https://
 
 Required environment variables:
 ```
-
+export AWS_BASTION_VPCID="..."
+export AWS_BASTION_SUBNET1ID="..."
+export AWS_BASTION_SUBNET2ID="..."
+export AWS_BASTION_KEYPAIRNAME="..."
+export AWS_BASTION_REMOTEACCESSCIDR="..."
 ```
 ```
 ./create_bastion.sh
@@ -18,8 +22,9 @@ KeyName pem file (default: `dev-box`) is required before runing the scripts!
 
 Required environment variables:
 ```
-export AWS_DEVBOX_SUBNETID="..."
 export AWS_DEVBOX_VPCID="..."
+export AWS_DEVBOX_SUBNETID="..."
+export AWS_DEVBOX_KEYPAIRNAME="..."
 ```
 ```
 ./create_devbox.sh
