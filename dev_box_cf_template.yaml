@@ -97,7 +97,6 @@ Resources:
             Roles:
             - !Ref RootRole
 
-
     RootInstanceProfile:
         Type: AWS::IAM::InstanceProfile
         Properties:
