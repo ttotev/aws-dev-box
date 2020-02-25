@@ -61,7 +61,66 @@ Resources:
             Tags: 
             -   Key: Name
                 Value: Dev-Box
-            # UserData:
+            UserData:
+                Fn::Base64: !Sub |
+                    #!/bin/bash
+                    apt update -y
+                    apt install -y software-properties-common
+                    apt install -y python-pip
+                    add-apt-repository -y ppa:deadsnakes/ppa
+                    apt install -y python3.8
+                    apt install -y python-setuptools
+                    mkdir -p /opt/aws/bin
+                    python /usr/lib/python2.7/dist-packages/easy_install.py --script-dir /opt/aws/bin https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+                    /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
+                    /opt/aws/bin/cfn-signal -e --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
+        Metadata:
+            # If you change the configSet ID from setup, ensure you update it throughout the this resource configuration. Anywhere is says setup, change it to reflect the new ID. 
+            AWS::CloudFormation::Init:
+                configSets:
+                    setup:
+                    -   configure_cfn
+                configure_cfn:
+                    files:
+                        /etc/cfn/cfn-hup.conf:
+                            content: !Sub |
+                                [main]
+                                stack=${AWS::StackId}
+                                region=${AWS::Region}
+                                verbose=true
+                                interval=5
+                                mode: "000400"
+                                owner: root
+                                group: root
+                        /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+                            content: !Sub |
+                                [cfn-auto-reloader-hook]
+                                triggers=post.update
+                                path=Resources.EC2.Metadata.AWS::CloudFormation::Init
+                                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
+                                mode: "000400"
+                                owner: root
+                                group: root
+                        /lib/systemd/system/cfn-hup.service:
+                            content: !Sub |
+                                [Unit]
+                                Description=cfn-hup daemon
+                                
+                                [Service]
+                                Type=simple
+                                ExecStart=/opt/aws/bin/cfn-hup
+                                Restart=always
+                                
+                                [Install]
+                                WantedBy=multi-user.target
+                                mode: "000400"
+                                owner: root
+                                group: root
+                    commands:
+                        01_enable_cfn-hup:
+                            command: "systemctl enable cfn-hup.service"
+                        02_start_cfn-hup:
+                            command: "systemctl start cfn-hup.service"
 
     InstanceSecurityGroup:
         Type: AWS::EC2::SecurityGroup
