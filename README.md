@@ -4,6 +4,8 @@ Cloudformation template for running a developmnet box on AWS with SSH connection
 
 *The scripts can be run from git-bash installed on Windows*
 
+Create key-pair and download here private key
+
 ## Bastion Host Setup
 Enable Bastion host - follow instructions at [quickstart-linux-bastion](https://github.com/aws-quickstart/quickstart-linux-bastion)
 
@@ -40,3 +42,11 @@ export AWS_DEVBOX_IP="..."
 ```
 ./setup_privatekeys.sh
 ```
+## Setup SSH conection from Visual Studio Code to the new intsance (~/.ssh/config)
+```
+Host devbox
+    HostName ...IP address..
+    User ubuntu
+    IdentityFile ...path to identity file...
+```
+Open Remote Window from VSC and choose *devbox*

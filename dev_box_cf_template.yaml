@@ -64,9 +64,15 @@ Resources:
             UserData:
                 Fn::Base64: !Sub |
                     #!/bin/bash
+                    set -x
+                    exec > >(tee /var/log/user-data.log|logger -t user-data ) 2>&1
+                    echo BEGIN
+                    date '+%Y-%m-%d %H:%M:%S'
                     apt update -y
                     apt install -y unzip
                     cd /tmp
+                    wget https://releases.hashicorp.com/terraform/0.12.21/terraform_0.12.21_linux_amd64.zip
+                    unzip terraform_0.12.21_linux_amd64.zip -d /usr/local/bin
                     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
                     unzip awscliv2.zip
                     sudo ./aws/install
@@ -85,8 +91,12 @@ Resources:
                     cd /home/ubuntu
                     mkdir -p /opt/aws/bin
                     python /usr/lib/python2.7/dist-packages/easy_install.py --script-dir /opt/aws/bin https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+                    cd /opt/aws
+                    wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-1.4-31.tar.gz
+                    tar xvzf aws-cfn-bootstrap-1.4-31.tar.gz
+                    ln -s /opt/aws/aws-cfn-bootstrap-1.4/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
                     /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
-                    /opt/aws/bin/cfn-signal -e --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
+                    /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource DevBox --region ${AWS::Region}
         Metadata:
             # If you change the configSet ID from setup, ensure you update it throughout the this resource configuration. Anywhere is says setup, change it to reflect the new ID. 
             AWS::CloudFormation::Init:
@@ -95,45 +105,44 @@ Resources:
                     -   configure_cfn
                 configure_cfn:
                     files:
-                        /etc/cfn/cfn-hup.conf:
+                        '/etc/cfn/cfn-hup.conf':
                             content: !Sub |
                                 [main]
                                 stack=${AWS::StackId}
                                 region=${AWS::Region}
-                                verbose=true
-                                interval=5
-                                mode: "000400"
-                                owner: root
-                                group: root
-                        /etc/cfn/hooks.d/cfn-auto-reloader.conf:
-                            content: !Sub |
-                                [cfn-auto-reloader-hook]
-                                triggers=post.update
-                                path=Resources.EC2.Metadata.AWS::CloudFormation::Init
-                                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource DevBox --configsets setup --region ${AWS::Region}
-                                mode: "000400"
-                                owner: root
-                                group: root
-                        /lib/systemd/system/cfn-hup.service:
+                                interval=1
+                            mode: '000400'
+                            owner: root
+                            group: root
+                        # '/etc/cfn/hooks.d/amazon-cloudwatch-agent-auto-reloader.conf':
+                        #     content: !Sub |
+                        #         [cfn-auto-reloader-hook]
+                        #         triggers=post.update
+                        #         path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent
+                        #         action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment
+                        #         runas=root
+                        #     mode: '000400'
+                        #     owner: root
+                        #     group: root
+                        "/lib/systemd/system/cfn-hup.service":
                             content: !Sub |
                                 [Unit]
                                 Description=cfn-hup daemon
-                                
                                 [Service]
                                 Type=simple
                                 ExecStart=/opt/aws/bin/cfn-hup
                                 Restart=always
-                                
                                 [Install]
                                 WantedBy=multi-user.target
-                                mode: "000400"
-                                owner: root
-                                group: root
                     commands:
                         01_enable_cfn-hup:
                             command: "systemctl enable cfn-hup.service"
                         02_start_cfn-hup:
                             command: "systemctl start cfn-hup.service"
+        CreationPolicy:
+            ResourceSignal:    
+                Count: 1
+                Timeout: PT3M
 
     InstanceSecurityGroup:
         Type: AWS::EC2::SecurityGroup
