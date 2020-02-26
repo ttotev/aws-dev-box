@@ -2,6 +2,8 @@
 
 Cloudformation template for running a developmnet box on AWS with SSH connection.
 
+*The scripts can be run from git-bash installed on Windows*
+
 ## Bastion Host Setup
 Enable Bastion host - follow instructions at [quickstart-linux-bastion](https://github.com/aws-quickstart/quickstart-linux-bastion)
 
@@ -28,4 +30,13 @@ export AWS_DEVBOX_KEYPAIRNAME="..."
 ```
 ```
 ./create_devbox.sh
+```
+Transfer GitLab or any other SSH identity private file to the new instance
+
+Required environment variables:
+```
+export AWS_DEVBOX_IP="..."
+```
+```
+./setup_privatekeys.sh
 ```
