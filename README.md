@@ -4,22 +4,9 @@ Cloudformation template for running a developmnet box on AWS with SSH connection
 
 *The scripts can be run from git-bash installed on Windows*
 
-Create key-pair and download here private key
+*Preference is given to Ubuntu AMI*
 
-## Bastion Host Setup
-Enable Bastion host - follow instructions at [quickstart-linux-bastion](https://github.com/aws-quickstart/quickstart-linux-bastion)
-
-Required environment variables:
-```
-export AWS_BASTION_VPCID="..."
-export AWS_BASTION_SUBNET1ID="..."
-export AWS_BASTION_SUBNET2ID="..."
-export AWS_BASTION_KEYPAIRNAME="..."
-export AWS_BASTION_REMOTEACCESSCIDR="..."
-```
-```
-./create_bastion.sh
-```
+Create key-pair and download here the private key
 
 ## Development Box Setup
 KeyName pem file (default: `dev-box`) is required before runing the scripts!
@@ -50,3 +37,18 @@ Host devbox
     IdentityFile ...path to identity file...
 ```
 Open Remote Window from VSC and choose *devbox*
+
+## Bastion Host Setup (optional)
+Enable Bastion host - follow instructions at [quickstart-linux-bastion](https://github.com/aws-quickstart/quickstart-linux-bastion)
+
+Required environment variables:
+```
+export AWS_BASTION_VPCID="..."
+export AWS_BASTION_SUBNET1ID="..."
+export AWS_BASTION_SUBNET2ID="..."
+export AWS_BASTION_KEYPAIRNAME="..."
+export AWS_BASTION_REMOTEACCESSCIDR="..."
+```
+```
+./create_bastion.sh
+```

@@ -30,7 +30,6 @@ Parameters:
         Type: AWS::EC2::Subnet::Id
         Default: subnet-id
         ConstraintDescription: must be an existing subnet id
-    
             
 Mappings:
     RegionMap:
