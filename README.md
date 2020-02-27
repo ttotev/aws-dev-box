@@ -22,12 +22,14 @@ export AWS_DEVBOX_KEYPAIRNAME="..."
 ```
 Transfer GitLab or any other SSH identity private file to the new instance
 
+Run additonal commands in post creation script that do not/should not require root installation
+
 Required environment variables:
 ```
 export AWS_DEVBOX_IP="..."
 ```
 ```
-./setup_privatekeys.sh
+./post_create.sh
 ```
 ## Setup SSH conection from Visual Studio Code to the new intsance (~/.ssh/config)
 ```
