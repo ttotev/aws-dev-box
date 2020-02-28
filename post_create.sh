@@ -5,5 +5,6 @@ then
 fi
 
 scp -i "${AWS_DEVBOX_KEYPAIRNAME}.pem" ~/.ssh/id_rsa "ubuntu@${AWS_DEVBOX_IP}:/home/ubuntu/.ssh/"
+ssh -i "${AWS_DEVBOX_KEYPAIRNAME}.pem" "ubuntu@${AWS_DEVBOX_IP}" chmod 400 /home/ubuntu/.ssh/id_rsa
 
 ssh -i "${AWS_DEVBOX_KEYPAIRNAME}.pem" "ubuntu@${AWS_DEVBOX_IP}" 'bash -s' < remote.sh
