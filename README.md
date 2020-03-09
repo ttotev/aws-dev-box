@@ -31,11 +31,9 @@ export AWS_DEVBOX_IP="..."
 Create required file `remote.sh` with post creation commands. For example,
 ```
 ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-cd ~
-mkdir code
-cd code
-mkdir tf
-cd tf
+cd /home/ubuntu
+mkdir code && cd code
+mkdir tf && cd tf
 git clone git@gitlab.com:...
 ```
 ```

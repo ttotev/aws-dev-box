@@ -57,6 +57,7 @@ Resources:
             SecurityGroupIds: 
             -   !Ref InstanceSecurityGroup
             SubnetId: !Ref SubnetId
+            DisableApiTermination: true
             Tags: 
             -   Key: Name
                 Value: Dev-Box
@@ -81,6 +82,7 @@ Resources:
                     apt-get install -y python-setuptools
                     apt-get install -y python3-pip
                     pip3 install --upgrade pip
+                    pip3 install jupyter
                     apt-get install -y docker.io
                     systemctl start docker
                     systemctl enable docker
